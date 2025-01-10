@@ -12,7 +12,7 @@ exports.localFileUpload = async (req, res) =>{
 
 
          //create path where file need to be stored on server
-         let path =__dirname + "/files/" + Date.now()+ `.${file.name.split('.')[1]}`;
+         let path =__dirname + "/files/" + Date.now()+`.${file.name.split('.')[1]}`;
            console.log("PATH->",path)
 
            // add path to the move function
@@ -35,6 +35,10 @@ exports.localFileUpload = async (req, res) =>{
 
 }
 
+
+
+
+
 function isFiletypeSupported(type, supportedTypes) {
        return supportedTypes.includes(type);
     }
@@ -43,14 +47,16 @@ function isFiletypeSupported(type, supportedTypes) {
 
     async function uploadFileToCloudinary(file, folder){
              const options={folder};
-         await cloudinary.uploader.upload(file.tempFilePath,options);
+             console.log("temp file path",file.tempFilePath);
+          return await cloudinary.uploader.upload(file.tempFilePath, options);
 
       }
 
 //image upload ka handler
 
- exports.imageUload=async(req,res)=>{
+exports.imageUpload = async (req, res) =>{
   try {
+
     //data fetch
         const {name, tags, email}=req.body;
          console.log(name,tags,email);
@@ -61,32 +67,28 @@ function isFiletypeSupported(type, supportedTypes) {
           //Validation
           const supportedTypes=["jpg","jpeg","png"];
           const fileType=file.name.split('.')[1].toLowerCase();
+             console.log("File Type is :-", fileType)
 
-
-          if(!fileTypeSupported(fileType, supportedTyoes))
-            {
+          if(!isFiletypeSupported(fileType, supportedTypes)){
                  return res.status(400).json({
                   success:false,
                    message:'File format not supported',
                  })
-
-
             }
 
             //File format supported hai:-then upload cloudinary
 
-
+                 console.log("Uploading to Fileupload");
              const response = await uploadFileToCloudinary(file,"Fileupload");
-             console.log(response);
+             console.log(response );
 
-             //db me entry save karni hai
-              // const fileData =await File.create({
-
-              //   name,
-              //   tags,
-              //   email,
-              //   imageUrl
-              // })
+            //  db me entry save karni hai
+              const fileData = await File.create({
+                name,
+                tags,
+                email,
+                imageUrl
+              })
 
 
               res.json({
@@ -102,3 +104,62 @@ function isFiletypeSupported(type, supportedTypes) {
          })
   }
  }
+
+
+ //video uploader ka handler
+
+
+  exports.videoUpload = async (req, res)=>{
+    try {
+
+     //data fetch
+     const {name, tags, email}=req.body;
+     console.log(name,tags,email);
+
+     const file = req.files.vdeoFile ;
+      console.log(file);
+
+
+      //Validation
+      const supportedTypes=["mp4","mov"];
+      const fileType=file.name.split('.')[1].toLowerCase();
+         console.log("File Type is :-", fileType)
+
+         //add a upper limit of 5mb for Video
+
+      if(!isFiletypeSupported(fileType, supportedTypes)){
+             return res.status(400).json({
+              success:false,
+               message:'File format not supported',
+             })
+        }
+
+                //File format supported hai:-then upload cloudinary
+
+                     console.log("Uploading to Fileupload");
+                         const response = await uploadFileToCloudinary(file,"Fileupload");
+               console.log(response );
+
+                //  db me entry save karni hai
+              // const fileData = await File.create({
+              //   name,
+              //   tags,
+              //   email,
+              //   imageUrl
+              // });
+
+
+              res.json({
+                success:true,
+                message:'video Successfully Uploaded',
+              })
+
+
+    } catch (error) {
+       console.error(error);
+       res.status(400).json({
+        success:false,
+        message:'Something  Went Wrong'
+       })
+    }
+  }

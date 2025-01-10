@@ -4,13 +4,14 @@ const express= require("express");
 
 
 
- const{localFileUpload,imageUload}= require("../controllers/fileUpload")
+ const{localFileUpload,imageUpload,videoUpload}= require("../controllers/fileUpload")
 
 
 
  //api route
 
  router.post("/localFileUpload",localFileUpload);
- router.post("/imageUload",imageUload);
+ router.post("/imageUpload",imageUpload );
+ router.post("/videoUpload",videoUpload );
 
  module.exports= router;
