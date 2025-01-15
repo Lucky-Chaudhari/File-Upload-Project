@@ -13,9 +13,9 @@ const express= require("express");
 app.use(express.json());
 const fileupload=require("express-fileupload");
  app.use(fileupload({
-       useTempFiles: true,
-       tempFileDir :'/tmp/'
- }));
+      useTempFiles : true,
+      tempFileDir : '/tmp/'
+  }));
 
 //db se connect karna hai
 
